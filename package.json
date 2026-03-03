@@ -1,0 +1,13 @@
+{
+    "name": "capn-console-workspace",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "wasm-core/pkg",
+        "web-ui"
+    ],
+    "scripts": {
+        "dev": "npm run dev --workspace=web-ui",
+        "build": "cd wasm-core && wasm-pack build --target web && cd ../web-ui && npm run build"
+    }
+}
