@@ -41,9 +41,34 @@ export const Visualizer: React.FC<VisualizerProps> = ({ layout }) => {
 
     const [hoveredField, setHoveredField] = useState<FieldLayout | null>(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+    const [isFirstLoad, setIsFirstLoad] = useState(true);
 
     const BYTE_WIDTH = 40;
     const HEIGHT = 60;
+    const PADDING_X = 20;
+
+    const autoFit = () => {
+        if (!containerRef.current || !layout.total_size) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const totalWidth = layout.total_size * BYTE_WIDTH + PADDING_X * 2;
+
+        // Calculate scale to fit width with some breathing room
+        const newScale = Math.min(1.5, (rect.width * 0.9) / totalWidth);
+        setScale(newScale);
+
+        // Center vertically and set initial X offset
+        setOffset({
+            x: (rect.width - totalWidth * newScale) / 2,
+            y: (rect.height - HEIGHT * newScale) / 2 - 20
+        });
+    };
+
+    useEffect(() => {
+        if (isFirstLoad && layout.total_size > 0) {
+            autoFit();
+            setIsFirstLoad(false);
+        }
+    }, [layout, isFirstLoad]);
 
     useEffect(() => {
         drawCanvas();
@@ -218,7 +243,15 @@ export const Visualizer: React.FC<VisualizerProps> = ({ layout }) => {
                     <h3 className="text-xl font-bold text-slate-200">Layout: {layout.name}</h3>
                     <p className="text-sm text-slate-400">Total Size: {layout.total_size} bytes (words: {Math.ceil(layout.total_size / 8)})</p>
                 </div>
-                <div className="flex gap-4 text-sm text-right">
+                <div className="flex gap-4 text-sm text-right items-center">
+                    <button
+                        onClick={autoFit}
+                        className="p-1.5 hover:bg-slate-700 rounded-md text-slate-400 hover:text-emerald-400 transition-colors title='Reset View'"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                    </button>
                     <div className="bg-slate-900 border border-slate-700 rounded px-3 py-1">
                         <span className="text-slate-400 block text-xs">Used Bytes</span>
                         <span className="text-emerald-400 font-mono">{usedBytes} B</span>

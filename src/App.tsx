@@ -59,7 +59,20 @@ function App() {
       setError(err.toString())
       console.error(err)
     }
+
+    // Reset file input so same file can be uploaded again if needed
+    if (e.target) {
+      e.target.value = '';
+    }
   }
+
+  const handleResetSchema = () => {
+    setSchemaTree(null);
+    setLayouts(null);
+    setSimulationMode(false);
+    setSimulationDiff(null);
+    setError(null);
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -169,12 +182,25 @@ function App() {
       <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10 w-full">
 
         {/* Header */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500 bg-clip-text text-transparent drop-shadow-sm text-center tracking-tight">
-          Cap'n Console
-        </h1>
-        <p className="text-slate-400 mb-10 text-center text-sm md:text-base max-w-2xl">
-          Interactive Memory Layout Optimizer for Cap'n Proto. Drag and drop struct fields to eliminate padding waste and calculate real-time alignment efficiency.
-        </p>
+        <div className="flex flex-col items-center mb-10 text-center w-full">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500 bg-clip-text text-transparent drop-shadow-sm tracking-tight">
+            Cap'n Console
+          </h1>
+          <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+            Interactive Memory Layout Optimizer for Cap'n Proto. Drag and drop struct fields to eliminate padding waste and calculate real-time alignment efficiency.
+          </p>
+          {schemaTree && (
+            <button
+              onClick={handleResetSchema}
+              className="mt-6 px-4 py-2 bg-slate-800/50 hover:bg-slate-700/80 text-slate-300 text-sm font-medium rounded-full border border-slate-700 transition-all flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Load Different Schema
+            </button>
+          )}
+        </div>
 
         {!wasmLoaded && !error && <p className="animate-pulse mb-8 text-emerald-400 font-semibold tracking-wide">Initializing Wasm Engine...</p>}
 
