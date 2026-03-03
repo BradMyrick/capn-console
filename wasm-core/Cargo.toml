@@ -1,0 +1,18 @@
+[package]
+name = "wasm-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+capnp = "0.25.1"
+console_error_panic_hook = "0.1.7"
+js-sys = "0.3.91"
+logos = "0.16.1"
+serde = { version = "1.0.228", features = ["derive"] }
+serde-wasm-bindgen = "0.6.5"
+wasm-bindgen = "0.2.114"
+web-sys = "0.3.91"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
